@@ -1,0 +1,18 @@
+export const spellTypes: Record<string, string> = {
+    "Fire": '🔥',
+    "Water": '🌊',
+    "Lightning": '⚡',
+    "Ice": '❄️',
+    "Earth": '🌍',
+    "Air": '🌪️',
+    "Dark": '🌑',
+    "Light": '🌟',
+    "Poison": '☠️',
+    "Shadow": '👤',
+    "Nature": '🌳',
+    "Healing": '❤️',
+    "Illusion": '👻',
+    "Portal": '🔮',
+    "Sky": '🌤️',
+    "Strength": '💪',
+}

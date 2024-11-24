@@ -3,6 +3,8 @@ import WizardCard from "./WizardCard";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { spellTypes } from "@/utils/types";
 import WizardSearchBar from "./WizardSearchBar";
+import toast from "react-hot-toast";
+import Loader from "./Loader";
 
 interface Wizard {
     id: string;
@@ -24,21 +26,21 @@ const WizardsComponent: React.FC = () => {
 
   const wizardsPerPage = 10;
 
-  useEffect(() => {
-    const fetchSpells = async () => {
-      try {
-        const response = await fetch("/api/wizards/all");
-        const data = await response.json();
-        setWizards(data);
-        setFilteredWizards(data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching spells:", error);
-        setLoading(false);
-      }
-    };
+  const fetchWizards = async () => {
+    try {
+      const response = await fetch("/api/wizards/all");
+      const data = await response.json();
+      setWizards(data);
+      setFilteredWizards(data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching spells:", error);
+      setLoading(false);
+    }
+  };
 
-    fetchSpells();
+  useEffect(() => {
+    fetchWizards();
   }, []);
 
   const indexOfLastWizard = currentPage * wizardsPerPage;
@@ -59,8 +61,46 @@ const WizardsComponent: React.FC = () => {
     }
   };
 
+  const handleDelete = (id: string) => {
+    fetch(`/api/wizards`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },  
+      body: JSON.stringify({ id }),
+    }).then((response) => {
+      if (response.ok) {
+        fetchWizards();
+        toast.success("Successfully deleted Wizard");
+      }
+    }).catch((error) => {
+      console.error("Error deleting Wizard:", error);
+      toast.error("Error deleting Wizard");
+    })
+  };
+
+  const handleEdit = async (newWizard: Wizard) => {
+    await fetch(`/api/wizards`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newWizard),
+    }).then((response) => {
+      if (response.ok) {
+        fetchWizards();
+        toast.success("Wizard updated successfully");
+      } else {
+        console.error("Failed to update Wizard");
+      }
+    }).catch((error) => {
+      console.error("Error updating Wizard:", error);
+      toast.error("Error updating Wizard");
+    });
+  }
+
   if (loading) {
-    return <div className="w-full flex justify-center items-center">Loading...</div>;
+    return <Loader/>;
   }
 
   return (
@@ -126,10 +166,11 @@ const WizardsComponent: React.FC = () => {
         {/* Modal for Selected Spell */}
         {selectedWizard && (
           <div
+            onClick={() => setSelectedWizard(null)}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
           >
             <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-lg">
-              <WizardCard wizard={selectedWizard} onClose={() => setSelectedWizard(null)} />
+              <WizardCard wizard={selectedWizard} onClose={() => setSelectedWizard(null)} onDelete={handleDelete} onEdit={handleEdit} />
             </div>
           </div>
         )}

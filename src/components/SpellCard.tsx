@@ -5,6 +5,7 @@ import { useWizardStore } from "@/stores/WizardStore";
 import { convertions } from "@/utils/types";
 
 interface Spell {
+  id: string;
   name: string;
   date_of_creation: string;
   created_by: string;
@@ -17,7 +18,7 @@ interface Spell {
 interface SpellCardProps {
   spell: Spell;
   onClose: () => void;
-  onDelete: () => void;
+  onDelete: (id: string) => void;
   onEdit: (updatedSpell: Spell) => void;
 }
 
@@ -81,7 +82,7 @@ const SpellCard: React.FC<SpellCardProps> = ({ spell, onClose, onDelete, onEdit 
                 Edit
               </button>}
               {login && roles[convertions[login?.role]]["spells-delete"] && <button
-                onClick={onDelete}
+                onClick={() => onDelete(spell.id)}
                 className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
               >
                 Delete

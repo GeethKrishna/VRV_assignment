@@ -218,32 +218,33 @@ export function SidebarButton({ icon, text, selectedButton, setSelectedButton }:
 
       {selectedButton && (
         <div
-          onClick={handleBackdropClick}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-scroll"
+        onClick={handleBackdropClick}
+        className="fixed inset-0 flex z-10 items-center justify-center bg-black bg-opacity-50 overflow-y-auto"
+      >
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className=" p-1 rounded-xl max-w-lg w-full bg-transparent overflow-auto max-h-screen"
         >
-          <div 
-            onClick={(e) => e.stopPropagation()}
-            className="p-6 rounded-xl max-w-lg"
-          >
-            {selectedButton === "Add Wizard" ? (
-              <WizardForm 
-                onClose={handleModalClose}
-                onSubmit={(newWizard) => {
-                  handleWizardCreation(newWizard);
-                  handleModalClose();
-                }} 
-              />
-            ) : selectedButton === "Create Spell" ? (
-              <SpellForm 
-                onClose={handleModalClose}
-                onSubmit={(newSpell) => {
-                  handleSpellCreation(newSpell);
-                  handleModalClose();
-                }} 
-              />
-            ) : null}
-          </div>
+          {selectedButton === "Add Wizard" ? (
+            <WizardForm
+              onClose={handleModalClose}
+              onSubmit={(newWizard) => {
+                handleWizardCreation(newWizard);
+                handleModalClose();
+              }}
+            />
+          ) : selectedButton === "Create Spell" ? (
+            <SpellForm
+              onClose={handleModalClose}
+              onSubmit={(newSpell) => {
+                handleSpellCreation(newSpell);
+                handleModalClose();
+              }}
+            />
+          ) : null}
         </div>
+      </div>
+      
       )}
     </>
   );

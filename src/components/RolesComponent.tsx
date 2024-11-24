@@ -1,6 +1,7 @@
 import React from "react";
 import { useRolesStore } from "@/stores/RolesStore";
 import toast from "react-hot-toast";
+import Loader from "./Loader";
 
 type Role = "novice" | "master" | "grandmaster";
 
@@ -41,7 +42,7 @@ const RolesComponent: React.FC = () => {
   }
 
   if (!roles) {
-    return <div>Loading...</div>;
+    return <Loader/>;
   }
 
   const renderPermissions = (role: string) => (

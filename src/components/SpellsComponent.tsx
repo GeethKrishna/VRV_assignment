@@ -3,6 +3,8 @@ import SpellCard from "./SpellCard";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { spellTypes } from "@/utils/types";
 import SearchBar from "./SearchBar";
+import toast from "react-hot-toast";
+import Loader from "./Loader";
 
 interface Spell {
   id: string;
@@ -24,20 +26,20 @@ const SpellsComponent: React.FC = () => {
 
   const spellsPerPage = 10;
 
-  useEffect(() => {
-    const fetchSpells = async () => {
-      try {
-        const response = await fetch("/api/spells/all");
-        const data = await response.json();
-        setSpells(data);
-        setFilteredSpells(data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching spells:", error);
-        setLoading(false);
-      }
-    };
+  const fetchSpells = async () => {
+    try {
+      const response = await fetch("/api/spells/all");
+      const data = await response.json();
+      setSpells(data);
+      setFilteredSpells(data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching spells:", error);
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchSpells();
   }, []);
 
@@ -59,8 +61,46 @@ const SpellsComponent: React.FC = () => {
     }
   };
 
+  const handleDelete = (id: string) => {
+    fetch(`/api/spells/`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    }).then((response) => {
+      if (response.ok) {
+        fetchSpells();
+        toast.success("Spell deleted successfully");
+      } else {
+        console.error("Failed to deleted Spell");
+      }
+    }).catch((error) => {
+      console.error("Error deleting Spell:", error);
+      toast.error("Error deleting Spell");
+    });
+  };
+
+  const handleEdit = (newSpell: Spell) => {
+    fetch(`/api/spells`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newSpell),
+    }).then((response) => {
+      if (response.ok) {
+        fetchSpells();
+        toast.success("Spell updated successfully");
+      } else {
+        console.error("Failed to update Spell");
+      }
+    }).catch((error) => {
+      console.error("Error updating Spell:", error);
+      toast.error("Error updating Spell");
+    });
+  }
+
   if (loading) {
-    return <div className="w-full flex justify-center items-center">Loading...</div>;
+    return <Loader/>;
   }
 
   return (
@@ -136,10 +176,11 @@ const SpellsComponent: React.FC = () => {
         {/* Modal for Selected Spell */}
         {selectedSpell && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+            onClick={() => setSelectedSpell(null)}  
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-auto"
           >
-            <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-lg">
-              <SpellCard spell={selectedSpell} onClose={() => setSelectedSpell(null)} />
+            <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-lg overflow-auto max-h-screen">
+              <SpellCard spell={selectedSpell} onClose={() => setSelectedSpell(null)} onDelete={handleDelete} onEdit={handleEdit} />
             </div>
           </div>
         )}

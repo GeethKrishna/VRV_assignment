@@ -9,6 +9,7 @@ import { useRolesStore } from "@/stores/RolesStore";
 import { useWizardStore } from "@/stores/WizardStore";
 import { useParams } from "next/navigation";
 import { convertions } from "@/utils/types";
+import Loader from "@/components/Loader";
 
 export default function Home() {
     const { roles, initializeRoles } = useRolesStore();
@@ -59,7 +60,7 @@ export default function Home() {
     }, []);
 
     if (loading) {
-      return <div>Loading...</div>;
+      return <Loader/>;
     }
     
     return (

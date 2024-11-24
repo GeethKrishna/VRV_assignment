@@ -9,7 +9,7 @@ const client: CosmosClient = new CosmosClient({
 // Define database and container with appropriate types
 const database: Database = client.database(process.env.COSMOSDB_DATABASE_NAME as string);
 const wizardsContainer: Container = database.container("wizards");
-const spellsContainer: Container = database.container("spells");
+const spellsContainer: Container = database.container("spells2");
 const rolesContainer: Container = database.container("roles");
 
 // Export at the top level

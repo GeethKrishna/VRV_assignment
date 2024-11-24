@@ -49,15 +49,8 @@ export async function POST(request: NextRequest) {
 
 // DELETE request to remove a wizard
 export async function DELETE(request: NextRequest) {
-    // Retrieve userId from the query parameters
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("id");
-
-    if (!userId) {
-        return new NextResponse("Wizard ID is required", { status: 400 });
-    }
-
     try {
+        const {id:userId} = await request.json();
         // Check if wizard exists before deleting
         const { resource: existingWizard } = await wizardsContainer.item(userId, userId).read();
 
@@ -77,17 +70,11 @@ export async function DELETE(request: NextRequest) {
 
 // PUT request to update wizard details
 export async function PUT(request: NextRequest) {
-    // Retrieve userId from the query parameters
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("id");
-
-    if (!userId) {
-        return new NextResponse("Wizard ID is required", { status: 400 });
-    }
 
     try {
         // Parse the incoming request body
         const updatedWizard = await request.json();
+        const userId = updatedWizard.id;
 
         // Check if wizard exists before updating
         const { resource: existingWizard } = await wizardsContainer.item(userId, userId).read();

@@ -18,7 +18,7 @@ interface Wizard {
 interface WizardCardProps {
   wizard: Wizard;
   onClose: () => void;
-  onDelete: () => void;
+  onDelete: (id: string) => void;
   onEdit: (updatedWizard: Wizard) => void;
 }
 
@@ -76,7 +76,7 @@ const WizardCard: React.FC<WizardCardProps> = ({ wizard, onClose, onDelete, onEd
               Edit
             </button>}
             {login && roles[convertions[login?.role]]["wizards-delete"] &&<button
-              onClick={onDelete}
+              onClick={() => onDelete(wizard.id)}
               className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
             >
               Delete

@@ -1,14 +1,15 @@
 "use client";
 import React, { useState } from "react";
 import { Settings, LogOut, User } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const path = usePathname();
+  const router = useRouter();
   return (
     <nav className={`${path.includes('dashboard') ? 'bg-indigo-500' : 'bg-slate-900'} text-white shadow-gray-300 shadow-md px-4 py-2 flex justify-between items-center`}>
-      <div className="text-xl font-semibold">
+      <div className="text-xl font-semibold hover:cursor-pointer" onClick={() => router.push("/")}>
         <span>Wiz Academy</span>
       </div>
 

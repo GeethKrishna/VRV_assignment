@@ -54,15 +54,9 @@ export async function POST(request: NextRequest) {
 
 // DELETE request to remove a spell
 export async function DELETE(request: NextRequest) {
-    const { searchParams } = new URL(request.url);
-    const spellId = searchParams.get("id");
-
-    if (!spellId) {
-        return new NextResponse("Spell ID is required", { status: 400 });
-    }
-
     try {
         // Check if spell exists before deleting
+        const {id:spellId} = await request.json();
         const { resource: existingSpell } = await spellsContainer.item(spellId, spellId).read();
 
         if (!existingSpell) {
@@ -84,16 +78,10 @@ export async function DELETE(request: NextRequest) {
 
 // PUT request to update spell details
 export async function PUT(request: NextRequest) {
-    const { searchParams } = new URL(request.url);
-    const spellId = searchParams.get("id");
-
-    if (!spellId) {
-        return new NextResponse("Spell ID is required", { status: 400 });
-    }
-
     try {
         // Parse the incoming request body
         const updatedSpell = await request.json();
+        const spellId = updatedSpell.id;
 
         if (!updatedSpell.name) {
             return new NextResponse("Spell name is required", { status: 400 });

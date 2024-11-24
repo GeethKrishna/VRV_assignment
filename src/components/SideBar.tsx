@@ -1,6 +1,9 @@
 "use client";
 import { ChevronLast, ChevronFirst } from "lucide-react";
 import React, { useContext, createContext, useState, ReactNode } from "react";
+import SpellForm from "./SpellForm";
+import WizardForm from "./WizardForm";
+import toast from 'react-hot-toast';
 
 // Define the context type
 interface SidebarContextType {
@@ -34,7 +37,9 @@ export default function Sidebar({ children }: SidebarProps) {
 
         {/* Provide Context */}
         <SidebarContext.Provider value={{ expanded }}>
-          <ul className="flex-1 px-3">{children}</ul>
+          <ul className="flex-1 px-3">
+            {children}
+          </ul>
         </SidebarContext.Provider>
       </nav>
     </aside>
@@ -51,7 +56,7 @@ interface SidebarItemProps {
 }
 
 // SidebarItem Component
-export function SidebarItem({ icon, text, active, alert,setSideBarOption }: SidebarItemProps) {
+export function SidebarItem({ icon, text, active, alert, setSideBarOption }: SidebarItemProps) {
   const context = useContext(SidebarContext);
 
   if (!context) {
@@ -103,5 +108,143 @@ export function SidebarItem({ icon, text, active, alert,setSideBarOption }: Side
         </div>
       )}
     </li>
+  );
+}
+
+interface SidebarButtonProps {
+  icon: ReactNode;
+  text: string;
+  selectedButton: string | null;
+  setSelectedButton: (option: string | null) => void;
+}
+
+export function SidebarButton({ icon, text, selectedButton, setSelectedButton }: SidebarButtonProps) {
+  const context = useContext(SidebarContext);
+
+  if (!context) {
+    throw new Error("SidebarButton must be used within a SidebarContext.Provider");
+  }
+
+  const { expanded } = context;
+
+  const handleWizardCreation = (newWizard: any) => {
+    fetch("/api/wizards", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newWizard),
+    }).then((response) => {
+      if (response.ok) {
+        console.log("Wizard created successfully");
+        toast.success("Wizard created successfully");
+      } else {
+        console.error("Failed to create Wizard");
+      }
+    }).catch((error) => {
+      console.error("Error creating Wizard:", error);
+      toast.error("Error creating Wizard");
+    });
+  };
+
+  const handleSpellCreation = (newSpell: any) => {
+    fetch("/api/spells", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newSpell),
+    }).then((response) => {
+      if (response.ok) {
+        console.log("Spell created successfully");
+        toast.success("Spell created successfully");
+      } else {
+        console.error("Failed to create Spell");
+      }
+    }).catch((error) => {
+      console.error("Error creating Spell:", error);
+      toast.error("Error creating Spell");
+    });
+  };
+
+  const handleButtonClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedButton(text);
+  };
+
+  const handleModalClose = () => {
+    setSelectedButton(null);
+  };
+
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      handleModalClose();
+    }
+  };
+
+  return (
+    <>
+      <li
+        onClick={handleButtonClick}
+        className={`
+          relative flex items-center justify-center p-[10px] mt-2
+          font-medium cursor-pointer transition-all group
+          bg-indigo-500 hover:bg-indigo-600 text-white
+          rounded-full
+        `}
+      >
+        {icon}
+        <span
+          className={`overflow-hidden transition-all whitespace-nowrap ${
+            expanded ? "w-44 ml-3" : "w-0"
+          }`}
+        >
+          {text}
+        </span>
+
+        {!expanded && (
+          <div
+            className={`
+              absolute left-full rounded-md px-2 py-1 ml-6
+              bg-indigo-100 text-indigo-800 text-sm
+              invisible opacity-0 -translate-x-3 transition-all whitespace-nowrap
+              group-hover:visible group-hover:opacity-100 group-hover:translate-x-0
+            `}
+          >
+            {text}
+          </div>
+        )}
+      </li>
+
+      {selectedButton && (
+        <div
+          onClick={handleBackdropClick}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-scroll"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="p-6 rounded-xl max-w-lg"
+          >
+            {selectedButton === "Add Wizard" ? (
+              <WizardForm 
+                onClose={handleModalClose}
+                onSubmit={(newWizard) => {
+                  handleWizardCreation(newWizard);
+                  handleModalClose();
+                }} 
+              />
+            ) : selectedButton === "Create Spell" ? (
+              <SpellForm 
+                onClose={handleModalClose}
+                onSubmit={(newSpell) => {
+                  handleSpellCreation(newSpell);
+                  handleModalClose();
+                }} 
+              />
+            ) : null}
+          </div>
+        </div>
+      )}
+    </>
   );
 }

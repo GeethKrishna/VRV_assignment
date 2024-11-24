@@ -1,18 +1,17 @@
 "use client";
 import React, { useState } from "react";
 import { Settings, LogOut, User } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+  const path = usePathname();
   return (
-    <nav className="bg-indigo-500 text-white shadow-gray-300 shadow-md px-4 py-2 flex justify-between items-center">
-      {/* App Name */}
+    <nav className={`${path.includes('dashboard') ? 'bg-indigo-500' : 'bg-slate-900'} text-white shadow-gray-300 shadow-md px-4 py-2 flex justify-between items-center`}>
       <div className="text-xl font-semibold">
         <span>Wiz Academy</span>
       </div>
 
-      {/* Avatar and Dropdown */}
       <div className="relative">
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -24,7 +23,6 @@ const Navbar = () => {
         {isDropdownOpen && (
           <div className="absolute right-0 mt-2 w-48 bg-gray-300 rounded-md shadow-lg z-10">
             <ul className="py-1 text-gray-700">
-              {/* Settings Option */}
               <li>
                 <a
                   href="/settings"
@@ -34,7 +32,6 @@ const Navbar = () => {
                   Settings
                 </a>
               </li>
-              {/* Logout Option */}
               <li>
                 <a
                   href="/"

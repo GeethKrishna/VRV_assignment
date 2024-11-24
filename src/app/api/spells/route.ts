@@ -25,10 +25,10 @@ export async function GET(request: NextRequest) {
       console.error(error);
       return new NextResponse("Failed to fetch Spell", { status: 500 });
     }
-  }
+}
   
-  // POST request to store new user details
-  export async function POST(request: NextRequest) {
+// POST request to store new user details
+export async function POST(request: NextRequest) {
     try {
       // Parse the incoming request body
       const spell = await request.json();
@@ -50,5 +50,77 @@ export async function GET(request: NextRequest) {
       console.error(error);
       return new NextResponse("Failed to create user", { status: 500 });
     }
-  }
-  
+}
+
+// DELETE request to remove a spell
+export async function DELETE(request: NextRequest) {
+    const { searchParams } = new URL(request.url);
+    const spellId = searchParams.get("id");
+
+    if (!spellId) {
+        return new NextResponse("Spell ID is required", { status: 400 });
+    }
+
+    try {
+        // Check if spell exists before deleting
+        const { resource: existingSpell } = await spellsContainer.item(spellId, spellId).read();
+
+        if (!existingSpell) {
+            return new NextResponse("Spell not found", { status: 404 });
+        }
+
+        // Delete the spell
+        await spellsContainer.item(spellId, spellId).delete();
+
+        return NextResponse.json({ 
+            message: "Spell deleted successfully",
+            deletedSpellId: spellId 
+        }, { status: 200 });
+    } catch (error) {
+        console.error(error);
+        return new NextResponse("Failed to delete spell", { status: 500 });
+    }
+}
+
+// PUT request to update spell details
+export async function PUT(request: NextRequest) {
+    const { searchParams } = new URL(request.url);
+    const spellId = searchParams.get("id");
+
+    if (!spellId) {
+        return new NextResponse("Spell ID is required", { status: 400 });
+    }
+
+    try {
+        // Parse the incoming request body
+        const updatedSpell = await request.json();
+
+        if (!updatedSpell.name) {
+            return new NextResponse("Spell name is required", { status: 400 });
+        }
+
+        // Check if spell exists before updating
+        const { resource: existingSpell } = await spellsContainer.item(spellId, spellId).read();
+
+        if (!existingSpell) {
+            return new NextResponse("Spell not found", { status: 404 });
+        }
+
+        // Merge existing spell with updates, maintaining the same ID and created_by
+        const spellToUpdate = {
+            ...existingSpell,
+            ...updatedSpell,
+            id: spellId, // Ensure ID doesn't change
+            created_by: existingSpell.created_by, // Preserve original creator
+            date_of_creation: existingSpell.date_of_creation // Preserve original creation date
+        };
+
+        // Update the spell
+        const { resource: updatedResource } = await spellsContainer.item(spellId, spellId).replace(spellToUpdate);
+
+        return NextResponse.json(updatedResource, { status: 200 });
+    } catch (error) {
+        console.error(error);
+        return new NextResponse("Failed to update spell", { status: 500 });
+    }
+}

@@ -16,3 +16,11 @@ export const spellTypes: Record<string, string> = {
     "Sky": '🌤️',
     "Strength": '💪',
 }
+
+export type Role = "novice" | "master" | "grandmaster";
+
+export const convertions: Record<string,Role> = {
+    "Grand Master": "grandmaster",
+    "Master": "master",
+    "Novice": "novice",
+  }

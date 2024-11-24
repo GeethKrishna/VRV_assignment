@@ -74,6 +74,7 @@ const WizardsComponent: React.FC = () => {
             <tr className="border-b border-gray-300">
               <th className="py-2 text-center">S.no</th>
               <th className="px-4 py-2 text-left max-w-20">Name</th>
+              <th className="px-4 py-2 text-left max-w-20">Role</th>
               <th className="px-4 py-2 text-center min-w-14 max-w-20">Exp</th>
               <th className="px-4 py-2 text-center">Speciality</th>
               <th className="px-4 py-2 text-center">Date of Joining</th>
@@ -91,6 +92,7 @@ const WizardsComponent: React.FC = () => {
                     {indexOfFirstWizard + index + 1}
                   </td>
                   <td className=" px-4 py-2 text-left max-w-20">{wizard.name}</td>
+                  <td className=" px-4 py-2 text-left max-w-20">{wizard.role}</td>
                   <td className=" px-4 py-2 text-center">{wizard.exp}</td>
                   <td className=" px-4 py-2 text-center"><span>{wizard.speciality} {spellTypes[wizard.speciality]}</span></td>
                   <td className=" px-4 py-2 text-center">{wizard.date_of_joining}</td>

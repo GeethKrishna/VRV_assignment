@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Navbar from "@/components/NavBar";
+import { Toaster } from "react-hot-toast";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -28,12 +29,13 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      > 
         <div className="h-screen flex flex-col">
           <div>
             <Navbar/>
           </div>
           <div className="flex-1 overflow-auto">
+            <Toaster />
             {children}
           </div>
         </div>
